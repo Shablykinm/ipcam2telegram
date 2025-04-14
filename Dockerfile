@@ -1,8 +1,17 @@
 FROM node:20-alpine AS builder
 WORKDIR /usr/src/app
 COPY package*.json ./
-RUN apk add --no-cache python3 make g++ && \
-    npm install
+
+RUN apk add --no-cache --virtual .build-deps \
+    python3 \
+    make \
+    g++ \
+    git \
+    autoconf \
+    automake \
+    libtool \
+    nasm
+RUN npm install
 COPY . .
 
 FROM node:20-alpine
