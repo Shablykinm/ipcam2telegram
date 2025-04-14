@@ -1,9 +1,11 @@
 services:
   ftp2telegram:
+    container_name: ipcam2ftp2telegram
     build: .
     restart: always
     ports:
-      - '21:21'
-      - '21000-21010:21000-21010'
+      - '2121:2121'
+      - '21000-21010:21000-21010/tcp'
     volumes:
       - './config:/usr/src/app/config:ro'
+    network_mode: bridge  

@@ -1,50 +1,72 @@
 <div align="center">
-    <h2>ftp2telegram</h2>
-    <img src="https://github.com/schinken/ftp2telegram/blob/master/assets/ftp2telegram.svg" width="500" alt="ftp2telegram">
-    <div>A standalone FTP Server forwarding everything to Telegram Chats/Groups</div>
+    <h2>📤 IPCAM -> FTP -> Telegram <h2>
+    <img src="https://github.com/Shablykinm/ipcam2ftp2telegram/blob/master/assets/ftp2telegram.svg" width="500" alt="ftp2telegram">
+    <div>FTP-сервер для автоматической пересылки файлов в Telegram</div>
 </div>
 
+## 🌟 О проекте
 
-## Introduction
+Это форк проекта [ftp2telegram](https://github.com/schinken/ftp2telegram) с доработками и поддержкой топиков в группе Telegram. 
 
-There are quite a few (both legacy as well as recent) devices which support FTP as the lowest common denominator for remote data exchange.<br/>
-Examples of these devices include Scanners (Scan to FTP), more-or-less Smart Doorbells and other appliances.
+**Решаемая проблема**: Большинство дешевых китайских IP-камер используют видеокодек hevc (h265, h264). 
+<br>
+**Этот проект позволяет**:
+- Принимать видеофайлы тревог через FTP **без сохранения на физический носитель**,
+- проксируя через ОЗУ - конвертировать в поддерживаемый Telegram'ом видеоформат,
+- мгновенно пересылать содержимое в чат\топик чата.
 
-Problem is: FTP is terrible.<br/>
-Hard to configure. Even harder to secure. ASCII Mode(???)
+## 🚀 Возможности
 
-Therefore, the idea is to simply use the least amount of FTP possible and forward everything to better protocols/means of data consumption.
+✅ **Полная эмуляция FTP-сервера**:
+- 🧩 Виртуальная файловая система в памяти (Хранится в ОЗУ, без сохранения на физический носитель, продлевая срок службы SD-карты);
+- 🔄 Поддержка любых FTP-клиентов;
+- 🔒 Базовая аутентификация.
 
-It gets this done by using the awesome `ftp-srv` node library and implementing an in-memory filesystem, working as a FTP DropBox, acknowledging every command like it happend for real. Including CWD, CHDIR, .. 
+📨 **Интеграция с Telegram**:
+- 🎯 Обработка выбора чата\топика на основании папки, в которую загружается файл;
+- 📹 Автоконвертация HEVC → MP4, MKV -> MP4, MOV -> MP4;
+- 🖼  При получении jpg, jpeg, png, gif - отправляет как фото. В случае ошибки или получении другого формата - отправляет как документ. (Настраивается списком поддерживаемых форматов в TelegramProxy);
+- 🔌 Неограниченное количество камер: в конфиг-файле production.js настраивается связь названия папки(в которую будет загружаться файл) и id чата (Если это чат без топика, то message_thread_id: undefined). Если при загрузке файла название папки не распознано, он будет отправляться в чат с folder: null.
 
-## Description
+🐳 **Готовое решение для Docker**
 
-ftp2telegram is a standalone FTP server which accepts images, animations, videos, audios or even documents uploaded and forwards them to
-the Telegram Chat-IDs configured.
+## 🔨 Что было исправлено
+- Замена библиотеки для работы с супергруппами Telegram;
+- Исправлены некоторые зависимости;
+- Доработан конфиг для расширения функционала;
+- Доработана конвертация видео (h265, h264) -> MP4;
+- Конвертация видео происходит вне зависимости получаемого видео - даже при получении MP4, т.к. она требуется для адаптации видео под все устройства.
 
-Uploads only reside in memory which is much cleaner than running a regular FTP-Server and watching the upload directory with inotify or something like that.
+## 💡 Что можно доработать
+Китайские дешевые камеры при использовании кодека h265, подмешивают аудио сигнал в видеопоток. Поэтому ffmpeg не видит аудиодорожку. 
+Для решения проблемы нужно:
+- Использовать либо специфичную сборку ffmpeg, которая обрабатывает SEI сообщения,
+- или добавлять в контейнер [ipcam26Xconvert](https://github.com/francescovannini/ipcam26Xconvert),
+- или аналогичный контейнер, но поддерживаемый передачу потока файлов через ОЗУ.
 
-## Getting started
+### Требования
+- Telegram-бот с токеном (можно получить через [@BotFather](https://t.me/BotFather));
+- ID чата (можно получить через [@myidbot](https://t.me/myidbot)).
 
-You can either run ftp2telegram directly or use the provided `Dockerfile`.<br/>
-In both cases, you will first need to check out this repository and copy the `config/default.js` to `config/production.js` while also of course editing it for your setup.
+## 🛠 Быстрый старт:
 
-If you're using docker, try this:
-
+### Настройка конфигурации
+```bash
+cp config/default.js config/production.js
+nano config/production.js  # Редактируем настройки
 ```
-docker build -t ftp2telegram:latest .
-docker run --dns 8.8.8.8 -p 9021:21 -p 21000-21010:21000-21010 --rm -it  ftp2telegram:latest
+
+### Запуск в docker
+
+```bash
+docker compose up --build -d
 ```
 
-If you're running it locally, you'll need to do the usual nodejs foo:
+### Запуск локально
 
-```
+```bash
 npm install
 npm run start
 ```
-
-To keep ftp2telegram running continuously as a service, you can take a look at the basic SystemD unit file, which can be found in `deployment/systemd`.
-
-
 
 
