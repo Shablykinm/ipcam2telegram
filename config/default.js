@@ -1,11 +1,13 @@
 module.exports = {
     ftp: {
         url: 'ftp://0.0.0.0:2121',
-        // pasv: {
-        //         ip: '192.168.88.11',
-        //         portMin: 21000,
-        //         portMax: 21010,
-        // },
+        pasv: {
+            //Важно только для докер контейнера - укажите реальный ip хоста. 
+            // Если запускаете локально - можно закомментировать всю ветку pasv.
+                ip: process.env.DOCKER_HOST_IP || '192.168.xx.xxx',
+                portMin: 21000,
+                portMax: 21010,
+        },
         credentials: {
             'ftp': 'telegram'
         }
