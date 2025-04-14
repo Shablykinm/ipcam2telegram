@@ -1,6 +1,6 @@
 <div align="center">
     <h2>📤 IPCAM -> FTP -> Telegram <h2>
-    <img src="https://github.com/Shablykinm/ipcam2ftp2telegram/blob/master/assets/ftp2telegram.svg" width="500" alt="ftp2telegram">
+    <img src="https://github.com/Shablykinm/ipcam2ftp2telegram/blob/master/assets/ipcam2ftp2telegram.svg" width="500" alt="ftp2telegram">
     <div>FTP-сервер для автоматической пересылки файлов в Telegram</div>
 </div>
 
